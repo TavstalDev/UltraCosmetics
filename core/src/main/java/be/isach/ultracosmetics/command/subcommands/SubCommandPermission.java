@@ -2,9 +2,11 @@ package be.isach.ultracosmetics.command.subcommands;
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.command.SubCommand;
+import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.type.CosmeticType;
 
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +19,7 @@ import java.util.Set;
 public class SubCommandPermission extends SubCommand {
 
     public SubCommandPermission(UltraCosmetics ultraCosmetics) {
-        super("permission", "Unlocks or locks a cosmetic for you or another user", "<add|remove> <category|*> <cosmetic|*> [player]", ultraCosmetics);
+        super("permission", "Commands.Permission.Description", "Commands.Permission.Usage", ultraCosmetics);
     }
 
     @Override
@@ -33,13 +35,12 @@ public class SubCommandPermission extends SubCommand {
         } else if (args[1].equalsIgnoreCase("remove")) {
             if (!ultraCosmetics.getPermissionManager().isUnsetSupported()) {
                 // ChatColor.RED to remove bold
-                error(sender, ChatColor.RED + "Removing cosmetic permissions through UC is only supported when UC is storing unlocked cosmetics.");
-                error(sender, ChatColor.RED + "Please use your permission plugin commands to remove cosmetic permissions instead.");
+                MessageManager.send(sender, "Commands.Permission.Warning");
                 return;
             }
             unlock = false;
         } else {
-            error(sender, "Must provide 'add' or 'remove' for first arg");
+            MessageManager.send(sender, "Commands.Permission.Arg-Required");
             return;
         }
 
@@ -48,27 +49,28 @@ public class SubCommandPermission extends SubCommand {
             if (sender instanceof Player) {
                 target = (Player) sender;
             } else {
-                error(sender, "A target player is required.");
+                MessageManager.send(sender, "Commands.Player-Required");
                 return;
             }
         } else {
             target = Bukkit.getPlayer(args[4]);
             if (target == null) {
-                error(sender, "Invalid player: " + args[4]);
+                var playerPlaceholder = Placeholder.unparsed("player", args[4]);
+                MessageManager.send(sender, "Commands.Player-Not-Found", playerPlaceholder);
                 return;
             }
         }
         Set<CosmeticType<?>> cosmetics = new HashSet<>();
         if (args[2].equals("*")) {
             if (!args[3].equals("*")) {
-                error(sender, "Cannot set specific cosmetic in wildcard category");
+                MessageManager.send(sender, "Wildcard-Error");
                 return;
             }
             Category.forEachCosmetic(cosmetics::add);
         } else {
             Category cat = Category.fromString(args[2]);
             if (cat == null) {
-                error(sender, "No such category: " + args[2]);
+                MessageManager.send(sender, "Invalid-Category");
                 return;
             }
             if (args[3].equals("*")) {
@@ -76,7 +78,7 @@ public class SubCommandPermission extends SubCommand {
             } else {
                 CosmeticType<?> type = cat.valueOfType(args[3]);
                 if (type == null) {
-                    error(sender, "No such cosmetic: " + args[3]);
+                    MessageManager.send(sender, "Invalid-Cosmetic");
                     return;
                 }
                 cosmetics.add(type);
@@ -88,8 +90,7 @@ public class SubCommandPermission extends SubCommand {
         } else {
             ultraCosmetics.getPermissionManager().unsetPermissions(target, cosmetics);
         }
-
-        sender.sendMessage(ChatColor.GREEN + "Success!");
+        MessageManager.send(sender, "Commands.Success");
     }
 
     @Override

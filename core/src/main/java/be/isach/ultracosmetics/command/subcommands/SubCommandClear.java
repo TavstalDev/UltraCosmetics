@@ -2,9 +2,11 @@ package be.isach.ultracosmetics.command.subcommands;
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.command.SubCommand;
+import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.player.UltraPlayer;
 
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,7 +22,7 @@ import java.util.List;
 public class SubCommandClear extends SubCommand {
 
     public SubCommandClear(UltraCosmetics ultraCosmetics) {
-        super("clear", "Clears a Cosmetic.", "<player> [type]", ultraCosmetics, true);
+        super("clear", "Commands.Clear.Description", "Commands.Clear.Usage", ultraCosmetics, true);
     }
 
     @Override
@@ -30,19 +32,20 @@ public class SubCommandClear extends SubCommand {
             if (sender instanceof Player) {
                 target = (Player) sender;
             } else {
-                error(sender, "You must specify a player.");
+                MessageManager.send(sender, "Commands.Player-Required");
                 return;
             }
         } else {
             target = Bukkit.getPlayer(args[1]);
             if (target == null) {
-                error(sender, "Player " + args[1] + " not found!");
+                var playerPlaceholder = Placeholder.unparsed("player", args[1]);
+                MessageManager.send(sender, "Commands.Player-Not-Found", playerPlaceholder);
                 return;
             }
         }
 
         if (target != sender && !sender.hasPermission(getPermission() + ".others")) {
-            error(sender, "You do not have permission to clear others.");
+            MessageManager.send(sender, "Commands.No-Permission-Others");
             return;
         }
 
@@ -55,7 +58,7 @@ public class SubCommandClear extends SubCommand {
 
         Category cat = Category.fromString(args[2]);
         if (cat == null) {
-            error(sender, "Invalid cosmetic type.");
+            MessageManager.send(sender, "Commands.Invalid-Cosmetic");
             return;
         }
         up.removeCosmetic(cat);

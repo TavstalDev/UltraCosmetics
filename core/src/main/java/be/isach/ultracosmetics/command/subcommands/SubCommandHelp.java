@@ -3,6 +3,11 @@ package be.isach.ultracosmetics.command.subcommands;
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.command.CommandManager;
 import be.isach.ultracosmetics.command.SubCommand;
+import be.isach.ultracosmetics.config.MessageManager;
+import be.isach.ultracosmetics.util.TextUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -13,7 +18,7 @@ public class SubCommandHelp extends SubCommand {
     private final CommandManager commandManager;
 
     public SubCommandHelp(UltraCosmetics ultraCosmetics, CommandManager commandManager) {
-        super("help", "Shows available UltraCosmetics commands", "", ultraCosmetics);
+        super("help", "Commands.Help.Description", "Commands.Help.Usage", ultraCosmetics);
         this.commandManager = commandManager;
     }
 
@@ -37,13 +42,17 @@ public class SubCommandHelp extends SubCommand {
             return;
         }
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "UltraCosmetics Help (/uc <page>) " + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + page + "/" + getMaxPages(available.size()) + ")");
+        TagResolver.Single pagePlaceholder = Placeholder.unparsed("currentpage", String.valueOf(page));
+        TagResolver.Single maxPagePlaceholder = Placeholder.unparsed("totalpages", String.valueOf(getMaxPages(available.size())));
+        MessageManager.send(sender, "Commands.Help.Title", pagePlaceholder, maxPagePlaceholder);
         int from = 8 * (page - 1);
         int to = 8 * page;
         for (int i = from; i < to; i++) {
             if (i >= available.size()) break;
             SubCommand sub = available.get(i);
-            sender.sendMessage(ChatColor.DARK_GRAY + "|  " + ChatColor.GRAY + sub.getUsage() + ChatColor.WHITE + " " + ChatColor.ITALIC + sub.getDescription());
+            TagResolver.Single usagePlaceholder = Placeholder.component("usage", sub.getUsageComponent());
+            TagResolver.Single descriptionPlaceholder = Placeholder.component("description", sub.getDescriptionComponent());
+            MessageManager.send(sender, "Commands.Help.Command", usagePlaceholder, descriptionPlaceholder);
         }
     }
 

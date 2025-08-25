@@ -3,9 +3,11 @@ package be.isach.ultracosmetics.command.subcommands;
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.UltraCosmeticsData;
 import be.isach.ultracosmetics.command.SubCommand;
+import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.mysql.tables.PlayerDataTable;
 import be.isach.ultracosmetics.player.profile.PlayerData;
 import be.isach.ultracosmetics.util.SmartLogger.LogLevel;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -18,17 +20,17 @@ import java.util.UUID;
 public class SubCommandMigrate extends SubCommand {
 
     public SubCommandMigrate(UltraCosmetics ultraCosmetics) {
-        super("migrate", "Moves player data from flatfile to MySQL and vice versa", "<flatfile|sql>", ultraCosmetics);
+        super("migrate", "Commands.Migrate.Description", "Commands.Migrate.Usage", ultraCosmetics);
     }
 
     @Override
     protected void onExeAnyone(CommandSender sender, String[] args) {
         if (!(sender instanceof ConsoleCommandSender)) {
-            error(sender, "This command can only be used from the console.");
+            MessageManager.send(sender, "Not-Allowed-From-Game");
             return;
         }
         if (UltraCosmeticsData.get().usingFileStorage()) {
-            error(sender, "SQL must be enabled and connected to migrate either direction.");
+            MessageManager.send(sender, "SQL-Must-Be-Enabled");
             return;
         }
         if (args.length < 2 || (!args[1].equalsIgnoreCase("flatfile") && !args[1].equalsIgnoreCase("sql"))) {
@@ -38,17 +40,14 @@ public class SubCommandMigrate extends SubCommand {
         boolean flatfile = args[1].equalsIgnoreCase("flatfile");
         if (args.length < 3 || !args[2].equalsIgnoreCase("confirm")) {
             if (Bukkit.getOnlinePlayers().size() > 0) {
-                error(sender, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                error(sender, "  It is HIGHLY recommended migration is only  ");
-                error(sender, "performed when no players are online, but you ");
-                error(sender, "           can decide for yourself!           ");
-                error(sender, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                MessageManager.send(sender, "Commands.Migrate.Warning");
             }
             String from = flatfile ? "SQL database" : "flatfile";
             String to = flatfile ? "flatfile" : "SQL database";
-            error(sender, "You are migrating from " + from + " to " + to);
-            error(sender, "Warning: any conflicting data in " + to + " will be overwritten.");
-            error(sender, "If you want to proceed, use /uc migrate " + args[1] + " confirm");
+            var fromPlaceholder = Placeholder.unparsed("from", from);
+            var toPlaceholder = Placeholder.unparsed("to", to);
+            var confirmPlaceholder = Placeholder.unparsed("confirm", args[1]);
+            MessageManager.send(sender, "Commands.Migrate.Confirm", fromPlaceholder, toPlaceholder, confirmPlaceholder);
             return;
         }
         ultraCosmetics.getScheduler().runAsync((task) -> migrate(flatfile));

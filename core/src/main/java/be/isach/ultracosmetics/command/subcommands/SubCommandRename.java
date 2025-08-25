@@ -6,6 +6,7 @@ import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.menu.buttons.RenamePetButton;
 import be.isach.ultracosmetics.player.UltraPlayer;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,7 +16,7 @@ import java.util.StringJoiner;
 public class SubCommandRename extends SubCommand {
 
     public SubCommandRename(UltraCosmetics ultraCosmetics) {
-        super("rename", "Renames/clears the name of active pet", "[new name]", ultraCosmetics);
+        super("rename", "Commands.Rename.Description", "Commands.Rename.Usage", ultraCosmetics);
     }
 
     @Override
@@ -26,12 +27,12 @@ public class SubCommandRename extends SubCommand {
     @Override
     protected void onExePlayer(Player player, String[] args) {
         if (!SettingsManager.getConfig().getBoolean("Pets-Rename.Enabled")) {
-            error(player, "Pet renaming is disabled.");
+            MessageManager.send(player, "Commands.Rename.Disabled");
             return;
         }
         UltraPlayer up = ultraCosmetics.getPlayerManager().getUltraPlayer(player);
         if (up.getCurrentPet() == null) {
-            error(player, "Please equip a pet to rename it.");
+            MessageManager.send(player, "Commands.Rename.No-Pet");
             return;
         }
         String newName;
@@ -47,7 +48,8 @@ public class SubCommandRename extends SubCommand {
         String stripped = MessageManager.getMiniMessage().stripTags(newName);
         int maxLength = SettingsManager.getConfig().getInt("Max-Pet-Name-Length", -1);
         if (maxLength != -1 && stripped.length() > maxLength) {
-            error(player, "Name cannot be longer than " + maxLength + " characters");
+            var maxPlaceholder = Placeholder.unparsed("max", String.valueOf(maxLength));
+            MessageManager.send(player, "Commands.Rename.Too-Long", maxPlaceholder);
             return;
         }
 
@@ -56,7 +58,7 @@ public class SubCommandRename extends SubCommand {
             player.openInventory(RenamePetButton.buyRenamePet(up, newName, null));
         } else {
             up.setPetName(up.getCurrentPet().getType(), newName);
-            player.sendMessage(ChatColor.GREEN + "Success!");
+            MessageManager.send(player, "Commands.Success");
         }
     }
 

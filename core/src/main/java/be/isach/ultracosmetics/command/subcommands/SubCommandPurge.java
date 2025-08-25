@@ -2,6 +2,8 @@ package be.isach.ultracosmetics.command.subcommands;
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.command.SubCommand;
+import be.isach.ultracosmetics.config.MessageManager;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,23 +19,22 @@ import java.io.File;
 public class SubCommandPurge extends SubCommand {
 
     public SubCommandPurge(UltraCosmetics ultraCosmetics) {
-        super("purge", "Purges old data files.", "<confirm>", ultraCosmetics);
+        super("purge", "Commands.Purge.Description", "Commands.Purge.Usage", ultraCosmetics);
     }
 
     @Override
     protected void onExeAnyone(CommandSender sender, String[] args) {
         if (args.length < 2 || !args[1].equalsIgnoreCase("confirm")) {
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Are you sure you want to purge old player data files? Depending on the amount of data files you have, this may lag your server for a noticable amount of time.");
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "To confirm purge of playerdata that doesn't contain treasure keys or pet names, type /uc purge confirm");
+            MessageManager.send(sender, "Commands.Purge.Warning");
             return;
         }
-        sender.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "Starting deletion now, this may take a while. Please wait...");
+        MessageManager.send(sender, "Commands.Purge.Start");
         ultraCosmetics.getScheduler().runAsync((task) -> {
             File dataFolder = new File(ultraCosmetics.getDataFolder(), "data");
             int deletedFiles = 0;
             int savedFiles = 0;
             if (!dataFolder.isDirectory()) {
-                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "An error occured: folder not valid. No data was purged.");
+                MessageManager.send(sender, "Commands.Purge.Error");
                 return;
             }
             for (File file : dataFolder.listFiles()) {
@@ -48,7 +49,9 @@ public class SubCommandPurge extends SubCommand {
                     }
                 }
             }
-            sender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Success! " + deletedFiles + " files were deleted, and " + savedFiles + " files were saved because of keys or pet names.");
+            var deletedPlaceholder = Placeholder.unparsed("deletedfiles", String.valueOf(deletedFiles));
+            var savedPlaceholder = Placeholder.unparsed("savedfiles", String.valueOf(savedFiles));
+            MessageManager.send(sender, "Commands.Purge.Success", deletedPlaceholder, savedPlaceholder);
         });
     }
 }

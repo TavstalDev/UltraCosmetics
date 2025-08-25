@@ -9,7 +9,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -58,7 +57,7 @@ public class CommandManager implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Set<Problem> problems = ultraCosmetics.getSevereProblems();
         if (!problems.isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "Plugin is currently disabled because:");
+            MessageManager.send(sender, "Plugin-Is-Disabled");
             // Don't use MessageManager's audiences, we can't be sure it initialized
             try (BukkitAudiences audiences = BukkitAudiences.create(ultraCosmetics)) {
                 Audience audience = audiences.sender(sender);

@@ -28,7 +28,7 @@ public class SubCommandToggle extends SubCommand {
     private static final String ERROR_PREFIX = " " + ChatColor.RED + ChatColor.BOLD;
 
     public SubCommandToggle(UltraCosmetics ultraCosmetics) {
-        super("toggle", "Toggles a cosmetic.", "<type> <cosmetic> [player]", ultraCosmetics, true);
+        super("toggle", "Commands.Toggle.Description", "Commands.Toggle.Usage", ultraCosmetics, true);
     }
 
     @Override
@@ -52,7 +52,8 @@ public class SubCommandToggle extends SubCommand {
     @Override
     protected void onExeAnyone(CommandSender sender, String[] args) {
         if (args.length != 4) {
-            badUsage(sender, "/uc toggle <type> <cosmetic> <player>");
+            //badUsage(sender, "/uc toggle <type> <cosmetic> <player>");
+            badUsage(sender);
             return;
         }
 
@@ -61,13 +62,13 @@ public class SubCommandToggle extends SubCommand {
 
     private void toggle(CommandSender sender, Player targetPlayer, String type, String cosm) {
         if (sender != targetPlayer && !sender.hasPermission(getPermission().getName() + ".others")) {
-            error(sender, "You do not have permission to toggle cosmetics for others.");
+            MessageManager.send(sender, "Commands.No-Permission-Others");
             return;
         }
 
         UltraPlayer target = ultraCosmetics.getPlayerManager().getUltraPlayer(targetPlayer);
         if (target == null) {
-            error(sender, "Invalid player.");
+            MessageManager.send(sender, "Invalid-Player");
             return;
         }
 
@@ -78,13 +79,13 @@ public class SubCommandToggle extends SubCommand {
 
         Optional<Category> categories = Arrays.stream(Category.values()).filter(category -> category.isEnabled() && category.toString().toLowerCase(Locale.ROOT).startsWith(type)).findFirst();
         if (!categories.isPresent()) {
-            error(sender, "Invalid category.");
+            MessageManager.send(sender, "Invalid-Category");
             return;
         }
         Category category = categories.get();
         CosmeticType<?> matchingType = findCosmetic(category, cosm);
         if (matchingType == null) {
-            error(sender, "Invalid cosmetic.");
+            MessageManager.send(sender, "Invalid-Cosmetic");
             return;
         }
         if (target.getCosmetic(category) != null && matchingType == target.getCosmetic(category).getType()) {
