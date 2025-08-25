@@ -6,6 +6,8 @@ import be.isach.ultracosmetics.cosmetics.Category;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,6 +15,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A subcommand.
@@ -37,7 +40,7 @@ public abstract class SubCommand {
         this.name = name;
         this.description = description;
         this.permission = registerPermission("ultracosmetics.command." + name, defaultPerm);
-        this.usage = "/uc " + name + " " + usage;
+        this.usage = usage;
         this.defaultPerm = defaultPerm;
         this.ultraCosmetics = ultraCosmetics;
     }
@@ -66,8 +69,18 @@ public abstract class SubCommand {
      *
      * @return The usage of this command.
      */
+    @Deprecated(since = "1.14.0", forRemoval = false)
     public String getUsage() {
         return usage;
+    }
+
+    public Component getUsageComponent() {
+        try {
+            return MessageManager.getMessage(usage);
+        }
+        catch (Exception ex) {
+            return Component.text(usage, NamedTextColor.RED, TextDecoration.BOLD);
+        }
     }
 
     /**
@@ -75,8 +88,20 @@ public abstract class SubCommand {
      *
      * @return The description of this command.
      */
+    @Deprecated(since = "1.14.0", forRemoval = false)
     public String getDescription() {
         return description;
+    }
+
+    public Component getDescriptionComponent() {
+        try
+        {
+            return MessageManager.getMessage(description);
+        }
+        catch (Exception ex)
+        {
+            return Component.text(description, NamedTextColor.RED, TextDecoration.BOLD);
+        }
     }
 
     /**
@@ -157,7 +182,14 @@ public abstract class SubCommand {
     }
 
     protected void badUsage(CommandSender sender, String usage) {
-        error(sender, "Incorrect Usage. " + usage);
+        TagResolver.Single usagePlaceholder;
+        if (Objects.equals(usage, this.usage)) {
+            usagePlaceholder = Placeholder.component("usage", getUsageComponent());
+        }
+        else {
+            usagePlaceholder = Placeholder.unparsed("usage", usage);
+        }
+        MessageManager.send(sender, "Commands.Usage", usagePlaceholder);
     }
 
     protected void error(CommandSender sender, String error) {
