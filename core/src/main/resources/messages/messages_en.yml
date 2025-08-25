@@ -1874,7 +1874,7 @@ Particles-Minimal-In-Client: <yellow>You have particles set to "minimal" in your
 
 # New Translations
 
-Plugin-Is-Disabled: <prefix> <red>Plugin is currently disabled because::
+Plugin-Is-Disabled: "<prefix> <red>Plugin is currently disabled because:"
 Invalid-Cosmetic: <prefix> <red>Invalid cosmetic!
 Invalid-Category: <prefix> <red>Invalid category!
 Invalid-Player: <prefix> <red>Invalid player!
@@ -1882,7 +1882,7 @@ Invalid-Cords: <prefix> <red>Invalid coordinates!
 Invalid-World: <prefix> <red>Invalid world!
 Gadget-Disabled: <prefix> <red>This gadget is disabled!
 Menu-Disabled: <prefix> <red>This menu is disabled!
-Invalid-Menu-List: <prefix> <red>Invalid menu, available menus are::
+Invalid-Menu-List: "<prefix> <red>Invalid menu, available menus are:"
 Not-Allowed-From-Game: <prefix> <red>This can only be executed in the console!
 SQL-Must-Be-Enabled: <prefix> <red>SQL must be enabled to use this command!
 
@@ -1951,9 +1951,9 @@ Commands:
     Description: Updates UltraCosmetics
     Usage: /uc update
     Must-Be-Enabled: <prefix> <red>Version checking must be enabled to update.
-    Current-Version: <prefix> <green>Current version:: <version>
+    Current-Version: "<prefix> <green>Current version: <version>"
     Force-Update: <prefix> <red>Ignoring version check and downloading anyway. This is not recommended and may result in a downgrade.
-    Update-Status: <prefix> <yellow>Update status:: <status>
+    Update-Status: "<prefix> <yellow>Update status: <status>"
     Update-Available: <prefix> <green>UltraCosmetics <version> is available to download.
     Requesting: <prefix> <yellow>Requesting update...
     Success: <prefix> <green>Update succeeded, please restart the server to complete the update.
@@ -1965,7 +1965,7 @@ Commands:
     Minor: <prefix> <yellow>UltraCosmetics currently has <issues> minor problems.
     Note: <prefix> <red>(Click on a problem to see its wiki page)
     Version: <prefix> <yellow>You are running UC <version> on <server>
-    Support: <prefix> <yellow>If you need help, join our Discord:: <click:open_url:'https://discord.gg/PgSXZT37JV'><underline><gold>https://discord.gg/PgSXZT37JV</underline></click>
+    Support: "<prefix> <yellow>If you need help, join our Discord: <click:open_url:'https://discord.gg/PgSXZT37JV'><underline><gold>https://discord.gg/PgSXZT37JV</underline></click>"
     Screenshot: <prefix> <green>When you join, share a screenshot of this message.
   Permission:
     Description: Modify permissions for players
@@ -1988,5 +1988,5 @@ Commands:
       <red>Are you sure you want to purge old player data files? Depending on the amount of data files you have, this may lag your server for a noticable amount of time.
       <red>To confirm purge of playerdata that doesn't contain treasure keys or pet names, type /uc purge confirm
     Start: <prefix> <aqua>Starting deletion now, this may take a while. Please wait...
-    Error: <prefix> <red>An error occured:: folder not valid. No data was purged.
+    Error: "<prefix> <red>An error occured: folder not valid. No data was purged."
     Success: <prefix> <green>Purge complete! <deletedfiles> ffiles were deleted, and <savedfiles> files were saved because of keys or pet names.
