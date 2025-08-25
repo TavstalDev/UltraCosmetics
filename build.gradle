@@ -54,6 +54,16 @@ allprojects {
             }
         }
     }
+
+    // This fixed for me the XSeries dependency not being found
+    // If this does not happen with you, you can remove it
+    // - Tavstal
+    repositories {
+        repositories {
+            mavenCentral()
+            maven { url 'https://jitpack.io' }
+        }
+    }
 }
 
 defaultTasks 'build'
