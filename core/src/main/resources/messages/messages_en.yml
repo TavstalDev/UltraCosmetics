@@ -1871,3 +1871,106 @@ Use-Rename-Pet-Command: <prefix> <red>Use <yellow>/uc rename</yellow> to rename
 Commands-Disabled-During-Chest: <prefix> <bold><red>You can't use commands while opening a chest!
 No-Buy-Key-Permission: <prefix> <red><bold>You don't have permission to buy treasure keys!
 Particles-Minimal-In-Client: <yellow>You have particles set to "minimal" in your client settings and so you won't be able to see particles.
+
+# New Translations
+
+Plugin-Is-Disabled: <prefix> <red>Plugin is currently disabled because::
+Invalid-Cosmetic: <prefix> <red>Invalid cosmetic!
+Invalid-Category: <prefix> <red>Invalid category!
+Invalid-Player: <prefix> <red>Invalid player!
+Gadget-Disabled: <prefix> <red>This gadget is disabled!
+Menu-Disabled: <prefix> <red>This menu is disabled!
+Invalid-Menu-List: <prefix> <red>Invalid menu, available menus are::
+Not-Allowed-From-Game: <prefix> <red>This can only be executed in the console!
+SQL-Must-Be-Enabled: <prefix> <red>SQL must be enabled to use this command!
+
+Commands:
+  Usage: <prefix> <red>Incorrect Usage. <usage>
+  Unknown-Subcommand: <prefix> <red>Unknown subcommand! Use /<command> help for help.
+  No-Permission: <prefix> <red>You don't have permission to do that!
+  No-Permission-Others: <prefix> <red>You don't have permission to do that for other players!
+  Player-Required: <prefix> <red>You must specify a player!
+  Player-Not-Found: <prefix> <red>Player <player> not found!
+  Invalid-Number: <prefix> <red><value> is not a valid number!
+  Success: <prefix> <green>Success!
+  Help:
+    Title: <white><bold>UltraCosmetics Help (/uc help <page>) <dark_gray><bold>(<currentpage>/<totalpages>)
+    Command: <dark_gray>| <gray><usage><white> <italic><description>
+    Description: Show available UltraCosmetics commands
+    Usage: /uc help <page>
+  Menu:
+    Description: Opens Specified menu
+    Usage: /uc menu <menu> [page] [player]
+  Gadgets:
+    Description: Toggle gadgets
+    Usage: /uc gadgets
+  SelfView:
+    Description: Toggle self view for morphs
+    Usage: /uc selfview
+  Give:
+    Description: Gives Ammo/Keys
+    Usage: /uc give key [amount] [player] OR /uc give ammo [amount] [player]
+    Ammo: <green><ammo> <gadget> ammo given to <player>
+    Keys: <green><amount> treasure key(s) given to <player>
+  Toggle:
+    Description: Toggles a cosmetic
+    Usage: /uc toggle <type> <cosmetic> [player]
+  Clear:
+    Description: Clears a cosmetic
+    Usage: /uc clear <player> [type]
+  Treasure:
+    Description: Starts Treasure Chest
+    Usage: /uc treasure [player] [<x> <y> <z>] [world]
+  TreasureNotification:
+    Description: Toggles notifications of loot given to other players
+    Usage: /uc treasurenotification
+  Migrate:
+    Description: Moves player data from flatfile to MySQL and vice versa
+    Usage: /uc migrate <flatfile | sql>
+    Warning: |-
+      <red>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      <red>It is HIGHLY recommended migration is only
+      <red>performed when no players are online, but you
+      <red>          can decide for yourself!
+      <red>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    Confirm: |-
+      <red>You are migrating from <from> to <to>.
+      <red>Warning: any conflicting data in <to> will be overwritten!
+      <red>If you want to proceed, use /uc migrate <confirm> to continue.
+  Reward:
+    Description: Gives reward(s) as if treasure chest was used
+    Usage: /uc reward [amount] [player]
+  Reload:
+    Description: Reloads the plugin
+    Usage: /uc reload
+    Start: <prefix> <yellow>Reloading now. If you experience issues, please report them and restart the server.
+    Finish: <prefix> <green>Reload complete.
+  Update:
+    Description: Updates UltraCosmetics
+    Usage: /uc update
+  Troubleshoot:
+    Description: Identifies issues with UltraCosmetics
+    Usage: /uc troubleshoot
+  Permission:
+    Description: Modify permissions for players
+    Usage: /uc permission <add | remove> <category | *> <cosmetic | *> [player]
+    Arg-Required: <red>Add or remove must be specified
+    Wildcard-Error: <red>Cannot set specific cosmetic in wildcard category
+    Warning: |-
+      <red>Removing cosmetic permissions through UC is only supported when UC is storing unlocked cosmetics.
+      <red>Please use your permission plugin commands to remove cosmetic permissions instead.
+  Rename:
+    Description: Renames/clears the name of the active pet
+    Usage: /uc rename <name>
+    Disabled: <prefix> <red>Renaming pets is disabled!
+    No-Pet: <prefix> <red>You don't have a pet equipped!
+    Too-Long: <prefix> <red>The name can not be longer than <max> characters!
+  Purge:
+    Description: Purges old data files.
+    Usage: /uc purge <confirm>
+    Warning: |-
+      <red>Are you sure you want to purge old player data files? Depending on the amount of data files you have, this may lag your server for a noticable amount of time.
+      <red>To confirm purge of playerdata that doesn't contain treasure keys or pet names, type /uc purge confirm
+    Start: <prefix> <aqua>Starting deletion now, this may take a while. Please wait...
+    Error: <prefix> <red>An error occured:: folder not valid. No data was purged.
+    Success: <prefix> <green>Purge complete! <deletedfiles> ffiles were deleted, and <savedfiles> files were saved because of keys or pet names.
