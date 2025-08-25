@@ -110,8 +110,7 @@ public class SubCommandGive extends SubCommand {
 
         addAmmo(gadgetType, target, ammo);
         var ammoPlaceholder = Placeholder.unparsed("ammo", String.valueOf(ammo));
-        // TODO: Gadget should use its translated name
-        var gadgetPlaceholder = Placeholder.unparsed("gadget", gadgetType.toString().toLowerCase(Locale.ROOT));
+        var gadgetPlaceholder = Placeholder.component("gadget", gadgetType.getName());
         var playerPlaceholder = Placeholder.unparsed("player", target.getName());
         MessageManager.send(sender, "Commands.Give.Ammo", ammoPlaceholder, gadgetPlaceholder, playerPlaceholder);
     }
