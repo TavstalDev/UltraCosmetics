@@ -1885,6 +1885,7 @@ Menu-Disabled: <prefix> <red>This menu is disabled!
 Invalid-Menu-List: "<prefix> <red>Invalid menu, available menus are:"
 Not-Allowed-From-Game: <prefix> <red>This can only be executed in the console!
 SQL-Must-Be-Enabled: <prefix> <red>SQL must be enabled to use this command!
+Cosmetics-Disabled-Region: "<prefix> <red>The following cosmetics are disabled in this area:<gray> <cosmetics>"
 
 Commands:
   Usage: <prefix> <red>Incorrect Usage. <usage>
