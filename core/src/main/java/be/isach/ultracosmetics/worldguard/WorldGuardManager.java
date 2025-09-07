@@ -13,6 +13,7 @@ import be.isach.ultracosmetics.util.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -99,14 +100,20 @@ public class WorldGuardManager {
 
         boolean preventSpam = blockedCategories.size() > 1;
         Component categoryNames = Component.empty();
+        Set<String> addedNames = new HashSet<>();
         boolean isFirst = true;
 
         for (Category category : blockedCategories) {
-            if (blockedCategories.contains(category) && uc.getPlayerManager().getUltraPlayer(player).removeCosmetic(category)) {
+            if (blockedCategories.contains(category) && uc.getPlayerManager().getUltraPlayer(player).removeCosmetic(category, !preventSpam)) {
                 Component categoryName =  TextUtil.stripColor(MessageManager.getMessage("Menu." + category.getConfigPath() + ".Title"));
 
                 if (preventSpam)
                 {
+                    String categoryRawName = PlainTextComponentSerializer.plainText().serialize(categoryName);
+                    if (addedNames.contains(categoryRawName))
+                        continue;
+                    addedNames.add(categoryRawName);
+
                     if (isFirst) {
                         categoryNames = categoryName;
                         isFirst = false;
@@ -121,7 +128,7 @@ public class WorldGuardManager {
             }
         }
 
-        if (!preventSpam)
+        if (!preventSpam || addedNames.isEmpty())
             return;
 
         TagResolver.Single placeholder = Placeholder.component("cosmetics", categoryNames);
@@ -144,14 +151,20 @@ public class WorldGuardManager {
 
         boolean preventSpam = restrictions.size() > 1;
         Component categoryNames = Component.empty();
+        Set<String> addedNames = new HashSet<>();
         boolean isFirst = true;
 
         for (Category cat : restrictions) {
-            if (ultraPlayer.removeCosmetic(cat)) {
+            if (ultraPlayer.removeCosmetic(cat, !preventSpam)) {
                 Component categoryName =  TextUtil.stripColor(MessageManager.getMessage("Menu." + cat.getConfigPath() + ".Title"));
 
                 if (preventSpam)
                 {
+                    String categoryRawName = PlainTextComponentSerializer.plainText().serialize(categoryName);
+                    if (addedNames.contains(categoryRawName))
+                        continue;
+                    addedNames.add(categoryRawName);
+
                     if (isFirst) {
                         categoryNames = categoryName;
                         isFirst = false;
@@ -166,7 +179,7 @@ public class WorldGuardManager {
             }
         }
 
-        if (!preventSpam)
+        if (!preventSpam || addedNames.isEmpty())
             return;
 
         TagResolver.Single placeholder = Placeholder.component("cosmetics", categoryNames);
@@ -175,11 +188,12 @@ public class WorldGuardManager {
 
     public void showroomFlagChange(UltraPlayer ultraPlayer, boolean newValue) {
         if (!newValue) {
+            // TODO: Anti spam
             for (Category cat : Category.values()) {
                 Cosmetic<?> cosmetic = ultraPlayer.getCosmetic(cat);
                 if (cosmetic == null) continue;
                 if (!ultraCosmetics.getPermissionManager().hasPermission(ultraPlayer, cosmetic.getType())) {
-                    ultraPlayer.removeCosmetic(cat);
+                    ultraPlayer.removeCosmetic(cat,true);
                 }
             }
         }
