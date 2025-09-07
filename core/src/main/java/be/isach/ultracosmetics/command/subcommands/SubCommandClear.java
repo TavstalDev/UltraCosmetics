@@ -61,7 +61,7 @@ public class SubCommandClear extends SubCommand {
             MessageManager.send(sender, "Commands.Invalid-Cosmetic");
             return;
         }
-        up.removeCosmetic(cat);
+        up.removeCosmetic(cat, true);
     }
 
     @Override

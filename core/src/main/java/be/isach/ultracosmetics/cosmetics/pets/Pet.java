@@ -175,13 +175,13 @@ public class Pet extends EntityCosmetic<PetType, Mob> implements Updatable {
                 invalidBypassTicks--;
                 return;
             }
-            clear();
+            clear(true);
             return;
         }
         invalidBypassTicks = 0;
 
         if (!getOwner().isOnline() || getOwner().getCurrentPet() != this) {
-            clear();
+            clear(true);
             return;
         }
 

@@ -47,9 +47,9 @@ public abstract class Morph extends Cosmetic<MorphType> {
      * Called when Morph is cleared.
      */
     @Override
-    public void clear() {
+    public void clear(boolean sendMessage) {
         DisguiseAPI.undisguiseToAll(getPlayer());
-        super.clear();
+        super.clear(sendMessage);
     }
 
     /**

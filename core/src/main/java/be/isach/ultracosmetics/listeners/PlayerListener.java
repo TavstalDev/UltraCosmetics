@@ -188,7 +188,7 @@ public class PlayerListener implements Listener {
         ultraPlayer.withPreserveEquipped(() -> {
             for (Category cat : Category.values()) {
                 if (cat.isClearOnDeath()) {
-                    ultraPlayer.removeCosmetic(cat);
+                    ultraPlayer.removeCosmetic(cat, true);
                 }
             }
         });

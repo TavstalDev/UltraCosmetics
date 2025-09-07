@@ -89,7 +89,7 @@ public class SubCommandToggle extends SubCommand {
             return;
         }
         if (target.getCosmetic(category) != null && matchingType == target.getCosmetic(category).getType()) {
-            target.removeCosmetic(category);
+            target.removeCosmetic(category, true);
         } else {
             matchingType.equip(target, ultraCosmetics);
         }

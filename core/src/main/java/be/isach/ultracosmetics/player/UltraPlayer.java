@@ -275,10 +275,10 @@ public class UltraPlayer {
      *
      * @return {@code true} if a cosmetic was actually unequipped
      */
-    public boolean removeCosmetic(Category category) {
+    public boolean removeCosmetic(Category category, boolean sendMessage) {
         if (!equipped.containsKey(category)) return false;
 
-        unsetCosmetic(category).clear();
+        unsetCosmetic(category).clear(sendMessage);
 
         return true;
     }
@@ -310,7 +310,7 @@ public class UltraPlayer {
      * @param cosmetic The cosmetic to set as equipped.
      */
     public void setCosmeticEquipped(Cosmetic<?> cosmetic) {
-        removeCosmetic(cosmetic.getCategory());
+        removeCosmetic(cosmetic.getCategory(), true);
         equipped.put(cosmetic.getCategory(), cosmetic);
         if (!preserveEquipped) {
             cosmeticsProfile.setEnabledCosmetic(cosmetic.getCategory(), cosmetic);
@@ -366,14 +366,14 @@ public class UltraPlayer {
                 // If player is "quitting", remove the disguise anyway. Player is marked as quitting
                 // when changing worlds, making sure morphs get correctly unset.
                 && (preserveEquipped || SettingsManager.isAllowedWorld(getBukkitPlayer().getWorld()))) {
-            removeCosmetic(Category.MORPHS);
+            removeCosmetic(Category.MORPHS, true);
         }
         for (Category cat : Category.values()) {
             // handled above
             if (cat == Category.MORPHS) {
                 continue;
             }
-            removeCosmetic(cat);
+            removeCosmetic(cat, true);
         }
         removeTreasureChest();
         return toReturn;
