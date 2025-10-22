@@ -54,7 +54,7 @@ public class MountDragon extends Mount {
     @Override
     public void onUpdate() {
         if (boost != null && boost.getPassengers().isEmpty() && boost.getTicksLived() > 10) {
-            clear();
+            clear(true);
         }
         brain.getBody().setHurtTime(20);
         if (SettingsManager.getConfig().getBoolean("Mounts." + getType().getConfigName() + ".Stationary")) return;

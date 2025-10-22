@@ -6,12 +6,9 @@ import be.isach.ultracosmetics.command.SubCommand;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.util.Problem;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,18 +17,19 @@ import java.util.Set;
 public class SubCommandTroubleshoot extends SubCommand {
 
     public SubCommandTroubleshoot(UltraCosmetics ultraCosmetics) {
-        super("troubleshoot", "Identifies issues with UltraCosmetics", "", ultraCosmetics);
+        super("troubleshoot", "Commands.Troubleshoot.Description", "Commands.Troubleshoot.Usage", ultraCosmetics);
     }
 
     @Override
     protected void onExeAnyone(CommandSender sender, String[] args) {
         Set<Problem> problems = ultraCosmetics.getProblems();
         if (problems.isEmpty()) {
-            sender.sendMessage(ChatColor.GREEN + "UltraCosmetics is not currently aware of any problems :)");
+            MessageManager.send(sender, "Commands.Troubleshoot.Fine");
         } else {
-            sender.sendMessage(ChatColor.RED + "UltraCosmetics currently has " + problems.size() + " minor problems.");
+            var problemPlaceholder = Placeholder.unparsed("issues", String.valueOf(problems.size()));
+            MessageManager.send(sender, "Commands.Troubleshoot.Minor", problemPlaceholder);
             if (sender instanceof Player) {
-                sender.sendMessage(ChatColor.RED + "(Click on a problem to see its wiki page)");
+                MessageManager.send(sender, "Commands.Troubleshoot.Note");
             }
             Audience audience = MessageManager.getAudiences().sender(sender);
             problems.forEach(p -> audience.sendMessage(p.getSummary().color(NamedTextColor.YELLOW)));
@@ -41,10 +39,10 @@ public class SubCommandTroubleshoot extends SubCommand {
 
     public static void sendSupportMessage(CommandSender sender) {
         String version = UltraCosmeticsData.get().getPlugin().getUpdateChecker().getCurrentVersion().versionClassifierCommit();
-        sender.sendMessage("You are running UC " + version + " on " + Bukkit.getName() + " " + Bukkit.getVersion());
-        Component discordMessage = Component.text("If you need help, click here to join the support Discord", NamedTextColor.GREEN, TextDecoration.UNDERLINED)
-                .clickEvent(ClickEvent.openUrl("https://discord.gg/mDSbzGPykk"));
-        MessageManager.getAudiences().sender(sender).sendMessage(discordMessage);
-        sender.sendMessage(ChatColor.GREEN + "When you join, share a screenshot of this message.");
+        var versionPlaceholder = Placeholder.unparsed("version", version);
+        var serverPlaceholder = Placeholder.unparsed("server", Bukkit.getName() + " " + Bukkit.getVersion());
+        MessageManager.send(sender, "Commands.Troubleshoot.Version", versionPlaceholder, serverPlaceholder);
+        MessageManager.send(sender, "Commands.Troubleshoot.Support");
+        MessageManager.send(sender, "Commands.Troubleshoot.Screenshot");
     }
 }

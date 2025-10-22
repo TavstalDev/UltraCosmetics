@@ -19,7 +19,7 @@ import java.util.List;
 public class SubCommandGadgets extends SubCommand {
 
     public SubCommandGadgets(UltraCosmetics ultraCosmetics) {
-        super("gadgets", "Toggle Gadgets", "", ultraCosmetics, true);
+        super("gadgets", "Commands.Gadgets.Description", "Commands.Gadgets.Usage", ultraCosmetics, true);
     }
 
     @Override

@@ -88,7 +88,7 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
 
     @Override
     public boolean tryEquip() {
-        getOwner().removeCosmetic(Category.GADGETS);
+        getOwner().removeCosmetic(Category.GADGETS, true);
         ItemStack current = getPlayer().getInventory().getItem(slot);
         if (current != null && current.getType() != Material.AIR) {
             MessageManager.send(getPlayer(), "Must-Remove.Gadgets",
@@ -123,7 +123,7 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
 
         UltraPlayer owner = getOwner();
         if (owner.getCurrentGadget() == null || owner.getCurrentGadget().getType() != getType()) {
-            clear();
+            clear(true);
             return;
         }
         if (this instanceof Updatable) {
@@ -151,10 +151,10 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
     }
 
     @Override
-    public void clear() {
+    public void clear(boolean sendMessage) {
         removeItem();
         getUltraCosmetics().getUnmovableItemListener().removeProvider(this);
-        super.clear();
+        super.clear(sendMessage);
     }
 
     /**
@@ -284,7 +284,7 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
     @Override
     public void handleDrop(PlayerDropItemEvent event) {
         if (removeWithDrop) {
-            clear();
+            clear(true);
             event.getItemDrop().remove();
         } else {
             event.setCancelled(true);
@@ -298,6 +298,6 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
 
     @Override
     public void moveItem(int slot, Player player) {
-        clear();
+        clear(true);
     }
 }

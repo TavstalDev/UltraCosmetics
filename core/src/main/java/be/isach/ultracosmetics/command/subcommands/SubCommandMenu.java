@@ -27,7 +27,7 @@ import java.util.Locale;
 public class SubCommandMenu extends SubCommand {
 
     public SubCommandMenu(UltraCosmetics ultraCosmetics) {
-        super("menu", "Opens Specified Menu", "<menu> [page] [player]", ultraCosmetics, true);
+        super("menu", "Commands.Menu.Description", "Commands.Menu.Usage", ultraCosmetics, true);
     }
 
     @Override
@@ -37,12 +37,13 @@ public class SubCommandMenu extends SubCommand {
         if (args.length > 3) {
             player = Bukkit.getPlayer(args[3]);
             if (player == null) {
-                MessageManager.send(sender, "Invalid-Player");
+                var playerPlaceholder = Placeholder.unparsed("player", args[3]);
+                MessageManager.send(sender, "Commands.Player-Not-Found", playerPlaceholder);
                 return;
             }
         } else {
             if (!(sender instanceof Player)) {
-                MessageManager.send(sender, "Must-Specify-Player");
+                MessageManager.send(sender, "Commands.Player-Required");
                 return;
             }
             player = (Player) sender;
@@ -71,7 +72,7 @@ public class SubCommandMenu extends SubCommand {
             return;
         } else if (s.startsWith("r") && SettingsManager.getConfig().getBoolean("Pets-Rename.Enabled")) {
             if (SettingsManager.getConfig().getBoolean("Pets-Rename.Permission-Required") && !sender.hasPermission("ultracosmetics.pets.rename")) {
-                MessageManager.send(sender, "No-Permission");
+                MessageManager.send(sender, "Commands.No-Permission");
                 return;
             }
             if (ultraPlayer.getCurrentPet() == null) {
@@ -95,7 +96,7 @@ public class SubCommandMenu extends SubCommand {
             return;
         }
         if (!cat.isEnabled()) {
-            error(sender, "That menu is disabled.");
+            MessageManager.send(sender, "Menu-Disabled");
             return;
         }
         menus.getCategoryMenu(cat).open(ultraPlayer, page);
@@ -124,7 +125,7 @@ public class SubCommandMenu extends SubCommand {
     }
 
     private void sendMenuList(CommandSender sender) {
-        error(sender, "Invalid menu, available menus are:");
+        MessageManager.send(sender, "Invalid-Menu-List");
         error(sender, String.join(", ", getMenus()));
     }
 

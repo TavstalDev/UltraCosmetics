@@ -2,9 +2,9 @@ package be.isach.ultracosmetics.command.subcommands;
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.command.SubCommand;
-import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.player.UltraPlayer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ import java.util.List;
 public class SubCommandClear extends SubCommand {
 
     public SubCommandClear(UltraCosmetics ultraCosmetics) {
-        super("clear", "Clears a Cosmetic.", "<player> [type]", ultraCosmetics, true);
+        super("clear", "Commands.Clear.Description", "Commands.Clear.Usage", ultraCosmetics, true);
     }
 
     @Override
@@ -30,19 +30,20 @@ public class SubCommandClear extends SubCommand {
             if (sender instanceof Player) {
                 target = (Player) sender;
             } else {
-                MessageManager.send(sender, "Must-Specify-Player");
+                MessageManager.send(sender, "Commands.Player-Required");
                 return;
             }
         } else {
             target = Bukkit.getPlayer(args[1]);
             if (target == null) {
-                MessageManager.send(sender, "Invalid-Player");
+                var playerPlaceholder = Placeholder.unparsed("player", args[1]);
+                MessageManager.send(sender, "Commands.Player-Not-Found", playerPlaceholder);
                 return;
             }
         }
 
         if (target != sender && !sender.hasPermission(getPermission() + ".others")) {
-            MessageManager.send(sender, "No-Permission");
+            MessageManager.send(sender, "Commands.No-Permission-Others");
             return;
         }
 
@@ -55,10 +56,10 @@ public class SubCommandClear extends SubCommand {
 
         Category cat = Category.fromString(args[2]);
         if (cat == null) {
-            MessageManager.send(sender, "Invalid-Category");
+            MessageManager.send(sender, "Commands.Invalid-Cosmetic");
             return;
         }
-        up.removeCosmetic(cat);
+        up.removeCosmetic(cat, true);
     }
 
     @Override

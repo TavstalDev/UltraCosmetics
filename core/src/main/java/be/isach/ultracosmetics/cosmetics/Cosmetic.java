@@ -110,11 +110,11 @@ public abstract class Cosmetic<T extends CosmeticType<?>> implements Listener {
         getOwner().setCosmeticEquipped(this);
     }
 
-    public /* final */ void clear() {
+    public /* final */ void clear(boolean sendMessage) {
         UCCosmeticUnequipEvent event = new UCCosmeticUnequipEvent(owner, this);
         Bukkit.getPluginManager().callEvent(event);
 
-        if (!owner.isPreserveEquipped()) {
+        if (!owner.isPreserveEquipped() && sendMessage) {
             TagResolver.Single typeNamePlaceholder = Placeholder.component(getCategory().getChatPlaceholder(), TextUtil.filterPlaceholderColors(typeName));
             Component deactivateMessage = MessageManager.getMessage(category.getConfigPath() + ".Unequip", typeNamePlaceholder);
             owner.sendMessage(deactivateMessage);
@@ -148,7 +148,7 @@ public abstract class Cosmetic<T extends CosmeticType<?>> implements Listener {
     }
 
     protected void unequipLikeCosmetics() {
-        getOwner().removeCosmetic(category);
+        getOwner().removeCosmetic(category, true);
     }
 
     protected boolean tryEquip() {

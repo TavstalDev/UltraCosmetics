@@ -41,16 +41,16 @@ public abstract class MountHeldItem extends Mount implements UnmovableItemProvid
     }
 
     @Override
-    public void clear() {
-        super.clear();
+    public void clear(boolean sendMessage) {
+        super.clear(sendMessage);
         getPlayer().getInventory().setItem(slot, null);
         getUltraCosmetics().getUnmovableItemListener().removeProvider(this);
     }
 
     @Override
     public boolean tryEquip() {
-        getOwner().removeCosmetic(Category.GADGETS);
-        getOwner().removeCosmetic(Category.MOUNTS);
+        getOwner().removeCosmetic(Category.GADGETS, true);
+        getOwner().removeCosmetic(Category.MOUNTS, true);
         ItemStack current = getPlayer().getInventory().getItem(slot);
         if (current != null && current.getType() != Material.AIR) {
             MessageManager.send(getPlayer(), "Must-Remove.Mounts",
@@ -70,7 +70,7 @@ public abstract class MountHeldItem extends Mount implements UnmovableItemProvid
     @Override
     public void handleDrop(PlayerDropItemEvent event) {
         if (removeWithDrop) {
-            clear();
+            clear(true);
             event.getItemDrop().remove();
         } else {
             event.setCancelled(true);
@@ -89,7 +89,7 @@ public abstract class MountHeldItem extends Mount implements UnmovableItemProvid
 
     @Override
     public void moveItem(int slot, Player player) {
-        clear();
+        clear(true);
     }
 
     @Override

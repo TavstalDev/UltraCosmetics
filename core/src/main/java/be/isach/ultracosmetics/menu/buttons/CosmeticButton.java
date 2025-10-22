@@ -133,7 +133,7 @@ public abstract class CosmeticButton implements Button {
             ultraPlayer.getBukkitPlayer().openInventory(mp.getInventory(ultraPlayer));
             return false; // We just opened another inventory, don't close it
         } else if (startsWithColorless(clicked.getItemMeta().getDisplayName(), cosmeticType.getCategory().getDeactivateTooltip())) {
-            ultraPlayer.removeCosmetic(cosmeticType.getCategory());
+            ultraPlayer.removeCosmetic(cosmeticType.getCategory(), true);
             if (!UltraCosmeticsData.get().shouldCloseAfterSelect()) {
                 data.getMenu().refresh(ultraPlayer);
             }

@@ -31,13 +31,13 @@ import java.util.List;
 public class SubCommandTreasure extends SubCommand {
 
     public SubCommandTreasure(UltraCosmetics ultraCosmetics) {
-        super("treasure", "Starts Treasure Chest.", "[player] [<x> <y> <z>] [world]", ultraCosmetics);
+        super("treasure", "Commands.Treasure.Description", "Commands.Treasure.Usage", ultraCosmetics);
     }
 
     @Override
     protected void onExeAnyone(CommandSender sender, String[] args) {
         if (args.length < 2 && !(sender instanceof Player)) {
-            MessageManager.send(sender, "Must-Specify-Player");
+            MessageManager.send(sender, "Commands.Player-Required");
             return;
         }
 
@@ -54,7 +54,8 @@ public class SubCommandTreasure extends SubCommand {
         } else {
             opener = Bukkit.getPlayer(args[1]);
             if (opener == null) {
-                MessageManager.send(sender, "Invalid-Player");
+                var playerPlaceholder = Placeholder.unparsed("player", args[1]);
+                MessageManager.send(sender, "Commands.Player-Not-Found", playerPlaceholder);
                 return;
             }
         }
@@ -94,7 +95,7 @@ public class SubCommandTreasure extends SubCommand {
             y = Integer.parseInt(args[3]);
             z = Integer.parseInt(args[4]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid coordinates!");
+            MessageManager.send(sender, "Invalid-Cords");
             return;
         }
 
@@ -103,7 +104,7 @@ public class SubCommandTreasure extends SubCommand {
         if (args.length > 5) {
             world = Bukkit.getWorld(args[5]);
             if (world == null) {
-                sender.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "World " + args[5] + " doesn't exist!");
+                MessageManager.send(sender, "Invalid-World");
                 return;
             }
             // form: /uc treasure (player) (x) (y) (z)

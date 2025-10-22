@@ -7,7 +7,6 @@ import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.type.CosmeticType;
 import be.isach.ultracosmetics.cosmetics.type.GadgetType;
 import be.isach.ultracosmetics.util.MathUtils;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +24,7 @@ import java.util.Locale;
 public class SubCommandGive extends SubCommand {
 
     public SubCommandGive(UltraCosmetics ultraCosmetics) {
-        super("give", "Gives Ammo/Keys", "key [amount] [player] OR /uc give ammo <type> <amount> [player]", ultraCosmetics);
+        super("give", "Commands.Give.Description", "Commands.Give.Usage", ultraCosmetics);
     }
 
     @Override
@@ -49,13 +48,14 @@ public class SubCommandGive extends SubCommand {
             if (sender instanceof Player) {
                 target = (Player) sender;
             } else {
-                MessageManager.send(sender, "Must-Specify-Player");
+                MessageManager.send(sender, "Commands.Player-Required");
                 return;
             }
         } else {
             target = Bukkit.getPlayer(args[targetArg]);
             if (target == null) {
-                MessageManager.send(sender, "Invalid-Player");
+                var playerPlaceholder = Placeholder.unparsed("player", args[3]);
+                MessageManager.send(sender, "Commands.Player-Not-Found", playerPlaceholder);
                 return;
             }
         }
@@ -64,7 +64,8 @@ public class SubCommandGive extends SubCommand {
             int keys = 1;
             if (args.length > 2) { // if amount arg supplied
                 if (!MathUtils.isInteger(args[2])) {
-                    MessageManager.send(sender, "Invalid-Number", Placeholder.unparsed("value", args[2]));
+                    var valuePlaceholder = Placeholder.unparsed("value", args[2]);
+                    MessageManager.send(sender, "Commands.Invalid-Number", valuePlaceholder);
                     return;
                 }
                 keys = Integer.parseInt(args[2]);
@@ -73,15 +74,16 @@ public class SubCommandGive extends SubCommand {
             // negative keys is fine, see comment on addAmmo
             addKeys(target, keys);
 
-            MessageManager.send(sender, "Treasure-Keys-Given",
-                    Placeholder.unparsed("keys", String.valueOf(keys)), Placeholder.unparsed("playername", target.getName()));
-            sender.sendMessage(ChatColor.GREEN.toString() + keys + " treasure keys given to " + target.getName());
+            var keysPlaceholder = Placeholder.unparsed("amount", String.valueOf(keys));
+            var playerPlaceholder = Placeholder.unparsed("player", target.getName());
+            MessageManager.send(sender, "Commands.Give.Keys", keysPlaceholder, playerPlaceholder);
             return;
         }
 
         // Giving ammo. /uc give ammo <type> <amount> [player]
         if (args.length < 4) {
-            badUsage(sender, "/uc give ammo <gadget> <amount> [player]");
+            //badUsage(sender, "/uc give ammo <gadget> <amount> [player]");
+            badUsage(sender);
             return;
         }
         GadgetType gadgetType = CosmeticType.valueOf(Category.GADGETS, args[2].toUpperCase(Locale.ROOT));
@@ -91,12 +93,13 @@ public class SubCommandGive extends SubCommand {
         }
 
         if (!gadgetType.isEnabled()) {
-            error(sender, "This gadget isn't enabled!");
+            MessageManager.send(sender, "Gadget-Disabled");
             return;
         }
 
         if (!MathUtils.isInteger(args[3])) {
-            MessageManager.send(sender, "Invalid-Number", Placeholder.unparsed("value", args[3]));
+            var valuePlaceholder = Placeholder.unparsed("value", args[3]);
+            MessageManager.send(sender, "Commands.Invalid-Number", valuePlaceholder);
             return;
         }
 
@@ -106,8 +109,10 @@ public class SubCommandGive extends SubCommand {
         int ammo = Integer.parseInt(args[3]);
 
         addAmmo(gadgetType, target, ammo);
-        MessageManager.send(sender, "Ammo-Given", Placeholder.unparsed("ammo", String.valueOf(ammo)),
-                Placeholder.unparsed("gadgetname", gadgetType.toString()), Placeholder.unparsed("playername", target.getName()));
+        var ammoPlaceholder = Placeholder.unparsed("ammo", String.valueOf(ammo));
+        var gadgetPlaceholder = Placeholder.component("gadget", gadgetType.getName());
+        var playerPlaceholder = Placeholder.unparsed("player", target.getName());
+        MessageManager.send(sender, "Commands.Give.Ammo", ammoPlaceholder, gadgetPlaceholder, playerPlaceholder);
     }
 
     private void addKeys(Player player, int amount) {

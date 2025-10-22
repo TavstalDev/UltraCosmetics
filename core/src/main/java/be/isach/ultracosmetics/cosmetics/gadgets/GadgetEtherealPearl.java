@@ -53,7 +53,7 @@ public class GadgetEtherealPearl extends Gadget implements Updatable {
 
     @Override
     protected void onRightClick() {
-        getOwner().removeCosmetic(Category.MOUNTS);
+        getOwner().removeCosmetic(Category.MOUNTS, true);
 
         Entity vehicle = getPlayer().getVehicle();
         if (vehicle instanceof EnderPearl) {

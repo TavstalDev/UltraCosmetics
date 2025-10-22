@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 public class SubCommandSelfView extends SubCommand {
 
     public SubCommandSelfView(UltraCosmetics ultraCosmetics) {
-        super("selfview", "Toggle Morph Self View", "", ultraCosmetics, true);
+        super("selfview", "Commands.SelfView.Description", "Commands.SelfView.Usage", ultraCosmetics, true);
     }
 
     @Override

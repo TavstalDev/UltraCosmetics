@@ -28,7 +28,7 @@ public class SubCommandToggle extends SubCommand {
     private static final String ERROR_PREFIX = " " + ChatColor.RED + ChatColor.BOLD;
 
     public SubCommandToggle(UltraCosmetics ultraCosmetics) {
-        super("toggle", "Toggles a cosmetic.", "[<type> <cosmetic>] [player]", ultraCosmetics, true);
+        super("toggle", "Commands.Toggle.Description", "Commands.Toggle.Usage", ultraCosmetics, true);
     }
 
     @Override
@@ -61,61 +61,32 @@ public class SubCommandToggle extends SubCommand {
     @Override
     protected void onExeAnyone(CommandSender sender, String[] args) {
         if (args.length != 2 && args.length != 4) {
-            badUsage(sender, "/uc toggle [<type> <cosmetic>] <player>");
-            return;
+            //badUsage(sender, "/uc toggle <type> <cosmetic> <player>");
+            badUsage(sender);
         }
 
         toggle(sender, Bukkit.getPlayer(args[3]), args[1].toLowerCase(Locale.ROOT), args[2].toLowerCase(Locale.ROOT));
     }
 
-    private UltraPlayer commonChecks(CommandSender sender, Player targetPlayer) {
+    private void toggle(CommandSender sender, Player targetPlayer, String type, String cosm) {
         if (sender != targetPlayer && !sender.hasPermission(getPermission().getName() + ".others")) {
-            MessageManager.send(sender, "No-Permission");
-            return null;
+            MessageManager.send(sender, "Commands.No-Permission-Others");
+            return;
         }
 
         UltraPlayer target = ultraCosmetics.getPlayerManager().getUltraPlayer(targetPlayer);
         if (target == null) {
             MessageManager.send(sender, "Invalid-Player");
-            return null;
+            return;
         }
 
         if (!SettingsManager.isAllowedWorld(target.getBukkitPlayer().getWorld())) {
             MessageManager.send(sender, "World-Disabled");
-            return null;
-        }
-
-        return target;
-    }
-
-    private void toggleAll(CommandSender sender, Player targetPlayer) {
-        UltraPlayer target = commonChecks(sender, targetPlayer);
-        if (target == null) {
-            return;
-        }
-
-        if (!target.getProfile().hasAnyEquipped()) {
-            error(sender, "Please specify the cosmetic to toggle");
-            return;
-        }
-
-        if (target.hasCosmeticsEquipped()) {
-            target.withPreserveEquipped(target::clear);
-            MessageManager.send(sender, "Cosmetics-Toggled-Off");
-        } else {
-            target.getProfile().equip();
-            MessageManager.send(sender, "Cosmetics-Toggled-On");
-        }
-    }
-
-    private void toggle(CommandSender sender, Player targetPlayer, String type, String cosm) {
-        UltraPlayer target = commonChecks(sender, targetPlayer);
-        if (target == null) {
             return;
         }
 
         Optional<Category> categories = Arrays.stream(Category.values()).filter(category -> category.isEnabled() && category.toString().toLowerCase(Locale.ROOT).startsWith(type)).findFirst();
-        if (categories.isEmpty()) {
+        if (!categories.isPresent()) {
             MessageManager.send(sender, "Invalid-Category");
             return;
         }
@@ -126,7 +97,7 @@ public class SubCommandToggle extends SubCommand {
             return;
         }
         if (target.getCosmetic(category) != null && matchingType == target.getCosmetic(category).getType()) {
-            target.removeCosmetic(category);
+            target.removeCosmetic(category, true);
         } else {
             matchingType.equip(target, ultraCosmetics);
         }

@@ -119,7 +119,7 @@ public class MorphElderGuardian extends Morph implements Updatable {
             return;
         }
         if (customGuardian == null || !customGuardian.isAlive()) {
-            getOwner().removeCosmetic(Category.MORPHS);
+            getOwner().removeCosmetic(Category.MORPHS, true);
             cancelTask();
         }
     }

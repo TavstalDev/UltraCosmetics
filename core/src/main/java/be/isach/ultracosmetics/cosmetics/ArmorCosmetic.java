@@ -39,8 +39,8 @@ public abstract class ArmorCosmetic<T extends CosmeticType<?>> extends Cosmetic<
     }
 
     @Override
-    public void clear() {
-        super.clear();
+    public void clear(boolean sendMessage) {
+        super.clear(sendMessage);
         setArmorItem(null);
     }
 
@@ -51,11 +51,11 @@ public abstract class ArmorCosmetic<T extends CosmeticType<?>> extends Cosmetic<
 
     protected boolean trySetSlot() {
         // Remove current equipped armor piece
-        getOwner().removeCosmetic(Category.suitsFromSlot(getArmorSlot()));
+        getOwner().removeCosmetic(Category.suitsFromSlot(getArmorSlot()), true);
 
         if (getArmorSlot() == ArmorSlot.HELMET) {
-            getOwner().removeCosmetic(Category.HATS);
-            getOwner().removeCosmetic(Category.EMOTES);
+            getOwner().removeCosmetic(Category.HATS, true);
+            getOwner().removeCosmetic(Category.EMOTES, true);
         }
 
         // If the user's armor slot is still occupied after we've removed all related cosmetics,
@@ -175,13 +175,13 @@ public abstract class ArmorCosmetic<T extends CosmeticType<?>> extends Cosmetic<
         }
         if (isItemThis(event.getItem())) {
             event.setUseItemInHand(Event.Result.DENY);
-            clear();
+            clear(true);
         }
     }
 
     private void handleDrop() {
         if (SettingsManager.getConfig().getBoolean("Remove-Gadget-With-Drop")) {
-            clear();
+            clear(true);
         }
     }
 

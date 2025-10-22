@@ -10,11 +10,14 @@ import be.isach.ultracosmetics.util.Problem;
 import be.isach.ultracosmetics.util.SmartLogger;
 import be.isach.ultracosmetics.util.SmartLogger.LogLevel;
 import be.isach.ultracosmetics.util.TextUtil;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class WorldGuardManager {
@@ -94,13 +97,42 @@ public class WorldGuardManager {
         }
         Set<Category> blockedCategories = flagManager.categoryFlagCheck(player);
         if (blockedCategories == null) return;
+
+        boolean preventSpam = blockedCategories.size() > 1;
+        Component categoryNames = Component.empty();
+        Set<String> addedNames = new HashSet<>();
+        boolean isFirst = true;
+
         for (Category category : blockedCategories) {
-            if (blockedCategories.contains(category) && uc.getPlayerManager().getUltraPlayer(player).removeCosmetic(category)) {
-                TagResolver.Single placeholder = Placeholder.component("category",
-                        TextUtil.stripColor(MessageManager.getMessage("Menu." + category.getConfigPath() + ".Title")));
+            if (blockedCategories.contains(category) && uc.getPlayerManager().getUltraPlayer(player).removeCosmetic(category, !preventSpam)) {
+                Component categoryName =  TextUtil.stripColor(MessageManager.getMessage("Menu." + category.getConfigPath() + ".Title"));
+
+                if (preventSpam)
+                {
+                    String categoryRawName = PlainTextComponentSerializer.plainText().serialize(categoryName);
+                    if (addedNames.contains(categoryRawName))
+                        continue;
+                    addedNames.add(categoryRawName);
+
+                    if (isFirst) {
+                        categoryNames = categoryName;
+                        isFirst = false;
+                    } else {
+                        categoryNames = categoryNames.append(Component.text(", ")).append(categoryName);
+                    }
+                    continue;
+                }
+
+                TagResolver.Single placeholder = Placeholder.component("category", categoryName);
                 MessageManager.send(player, "Region-Disabled-Category", placeholder);
             }
         }
+
+        if (!preventSpam || addedNames.isEmpty())
+            return;
+
+        TagResolver.Single placeholder = Placeholder.component("cosmetics", categoryNames);
+        MessageManager.send(player, "Cosmetics-Disabled-Region", placeholder);
     }
 
     protected boolean categoryFlagCheck(Player player, Category category) {
@@ -116,22 +148,52 @@ public class WorldGuardManager {
 
     public void restrictedCosmeticsChange(UltraPlayer ultraPlayer, Set<Category> restrictions) {
         Player bukkitPlayer = ultraPlayer.getBukkitPlayer();
+
+        boolean preventSpam = restrictions.size() > 1;
+        Component categoryNames = Component.empty();
+        Set<String> addedNames = new HashSet<>();
+        boolean isFirst = true;
+
         for (Category cat : restrictions) {
-            if (ultraPlayer.removeCosmetic(cat)) {
-                MessageManager.send(bukkitPlayer, "Region-Disabled-Category",
-                        Placeholder.component("category", MessageManager.getMessage("Menu." + cat.getConfigPath() + ".Title"))
-                );
+            if (ultraPlayer.removeCosmetic(cat, !preventSpam)) {
+                Component categoryName =  TextUtil.stripColor(MessageManager.getMessage("Menu." + cat.getConfigPath() + ".Title"));
+
+                if (preventSpam)
+                {
+                    String categoryRawName = PlainTextComponentSerializer.plainText().serialize(categoryName);
+                    if (addedNames.contains(categoryRawName))
+                        continue;
+                    addedNames.add(categoryRawName);
+
+                    if (isFirst) {
+                        categoryNames = categoryName;
+                        isFirst = false;
+                    } else {
+                        categoryNames = categoryNames.append(Component.text(", ")).append(categoryName);
+                    }
+                    continue;
+                }
+
+                TagResolver.Single placeholder = Placeholder.component("category", categoryName);
+                MessageManager.send(bukkitPlayer, "Region-Disabled-Category", placeholder);
             }
         }
+
+        if (!preventSpam || addedNames.isEmpty())
+            return;
+
+        TagResolver.Single placeholder = Placeholder.component("cosmetics", categoryNames);
+        MessageManager.send(bukkitPlayer, "Cosmetics-Disabled-Region", placeholder);
     }
 
     public void showroomFlagChange(UltraPlayer ultraPlayer, boolean newValue) {
         if (!newValue) {
+            // TODO: Anti spam
             for (Category cat : Category.values()) {
                 Cosmetic<?> cosmetic = ultraPlayer.getCosmetic(cat);
                 if (cosmetic == null) continue;
                 if (!ultraCosmetics.getPermissionManager().hasPermission(ultraPlayer, cosmetic.getType())) {
-                    ultraPlayer.removeCosmetic(cat);
+                    ultraPlayer.removeCosmetic(cat,true);
                 }
             }
         }

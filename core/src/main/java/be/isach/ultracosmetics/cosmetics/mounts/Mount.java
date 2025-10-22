@@ -107,7 +107,7 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
     @Override
     public void run() {
         if (entity.getPassengers().isEmpty() && entity.getTicksLived() > 10) {
-            clear();
+            clear(true);
             return;
         }
 
@@ -118,7 +118,7 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
 
         // Prevents players on mounts from being able to fall in the void infinitely.
         if (entity.getLocation().getY() <= VersionManager.getWorldMinHeight(entity.getWorld()) - 15) {
-            clear();
+            clear(true);
             return;
         }
 
@@ -149,7 +149,7 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
         }
 
         if (event.getVehicle() == entity && !beingRemoved && event.getExited() == getPlayer()) {
-            clear();
+            clear(true);
         }
     }
 
