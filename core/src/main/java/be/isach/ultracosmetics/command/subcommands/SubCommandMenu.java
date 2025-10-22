@@ -10,6 +10,7 @@ import be.isach.ultracosmetics.menu.Menus;
 import be.isach.ultracosmetics.menu.buttons.RenamePetButton;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.util.MathUtils;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

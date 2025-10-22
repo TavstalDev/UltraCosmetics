@@ -103,6 +103,46 @@ public class SubCommandToggle extends SubCommand {
         }
     }
 
+    private void toggleAll(CommandSender sender, Player targetPlayer) {
+        UltraPlayer target = commonChecks(sender, targetPlayer);
+        if (target == null) {
+            return;
+        }
+
+        if (!target.getProfile().hasAnyEquipped()) {
+            error(sender, "Please specify the cosmetic to toggle");
+            return;
+        }
+
+        if (target.hasCosmeticsEquipped()) {
+            target.withPreserveEquipped(target::clear);
+            MessageManager.send(sender, "Cosmetics-Toggled-Off");
+        } else {
+            target.getProfile().equip();
+            MessageManager.send(sender, "Cosmetics-Toggled-On");
+        }
+    }
+
+    private UltraPlayer commonChecks(CommandSender sender, Player targetPlayer) {
+        if (sender != targetPlayer && !sender.hasPermission(getPermission().getName() + ".others")) {
+            MessageManager.send(sender, "No-Permission");
+            return null;
+        }
+
+        UltraPlayer target = ultraCosmetics.getPlayerManager().getUltraPlayer(targetPlayer);
+        if (target == null) {
+            MessageManager.send(sender, "Invalid-Player");
+            return null;
+        }
+
+        if (!SettingsManager.isAllowedWorld(target.getBukkitPlayer().getWorld())) {
+            MessageManager.send(sender, "World-Disabled");
+            return null;
+        }
+
+        return target;
+    }
+
     private CosmeticType<?> findCosmetic(Category category, String partialName) {
         for (CosmeticType<?> type : category.getEnabled()) {
             if (type.toString().equalsIgnoreCase(partialName)) {
